@@ -20,16 +20,16 @@ export default function Login() {
     resolver: zodResolver(role === "user" ? userLoginSchema : adminLoginSchema),
   });
 
- const onSubmit = async (data) => {
-  try {
-    const res = await login({ ...data, role });
-    if (res.user.role === "admin") {
-      navigate("/admin/dashboard");
-    } else {
-      navigate("/home");  // ← /dashboard hoina /home
-    }
-  } catch {}
-};
+  const onSubmit = async (data) => {
+    try {
+      const res = await login({ ...data, role });
+      if (res.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/home");
+      }
+    } catch {}
+  };
 
   const handleRoleSwitch = (newRole) => {
     setRole(newRole);
@@ -49,12 +49,14 @@ export default function Login() {
         {/* Role Tabs */}
         <div className="role-tabs">
           <button
+            type="button"
             className={`role-tab ${role === "user" ? "active-user" : ""}`}
             onClick={() => handleRoleSwitch("user")}
           >
             👤 User
           </button>
           <button
+            type="button"
             className={`role-tab ${role === "admin" ? "active-admin" : ""}`}
             onClick={() => handleRoleSwitch("admin")}
           >
@@ -112,23 +114,6 @@ export default function Login() {
             )}
           </div>
 
-          {/* Admin PIN */}
-          {role === "admin" && (
-            <div className="mb-3">
-              <label className="auth-label">Admin PIN</label>
-              <input
-                type="password"
-                className={`auth-input admin-focus ${errors.adminPin ? "is-invalid" : ""}`}
-                placeholder="5-digit PIN"
-                maxLength={5}
-                {...register("adminPin")}
-              />
-              {errors.adminPin && (
-                <p className="auth-error-msg">{errors.adminPin.message}</p>
-              )}
-            </div>
-          )}
-
           {/* Submit */}
           <button
             type="submit"
@@ -144,7 +129,10 @@ export default function Login() {
         <div className="auth-divider">or</div>
         <p className="auth-switch">
           Don't have an account?{" "}
-          <Link to="/register" className={role === "admin" ? "link-admin" : "link-user"}>
+          <Link
+            to="/register"
+            className={role === "admin" ? "link-admin" : "link-user"}
+          >
             Create one
           </Link>
         </p>

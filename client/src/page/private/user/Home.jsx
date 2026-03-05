@@ -8,15 +8,15 @@ const brands = ["Apple", "Samsung", "Nike", "Adidas", "Sony", "IKEA", "Uniqlo", 
 
 export default function Home() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts]                 = useState([]);
+  const [loading, setLoading]                   = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1500);
-  const [search, setSearch] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [selectedBrands, setSelectedBrands]     = useState([]);
+  const [minPrice, setMinPrice]                 = useState(0);
+  const [maxPrice, setMaxPrice]                 = useState(100000);
+  const [search, setSearch]                     = useState("");
+  const [showFilters, setShowFilters]           = useState(false);
+  const [cartCount, setCartCount]               = useState(0);
 
   useEffect(() => {
     fetchProducts();
@@ -28,10 +28,10 @@ export default function Home() {
       setLoading(true);
       const params = {};
       if (selectedCategory !== "All") params.category = selectedCategory;
-      if (selectedBrands.length > 0) params.brand = selectedBrands.join(",");
-      if (minPrice) params.minPrice = minPrice;
-      if (maxPrice) params.maxPrice = maxPrice;
-      if (search) params.search = search;
+      if (selectedBrands.length > 0)  params.brand    = selectedBrands.join(",");
+      if (minPrice > 0)               params.minPrice = minPrice;
+      if (maxPrice < 100000)          params.maxPrice = maxPrice;
+      if (search)                     params.search   = search;
       const res = await axiosInstance.get("/products", { params });
       setProducts(res.data);
     } catch (err) {
@@ -68,8 +68,14 @@ export default function Home() {
     setSelectedCategory("All");
     setSelectedBrands([]);
     setMinPrice(0);
-    setMaxPrice(1500);
+    setMaxPrice(100000);
     setSearch("");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   return (
@@ -79,7 +85,10 @@ export default function Home() {
         <div className="header-inner">
           <div className="logo">store.</div>
           <div className="search-wrap">
-            <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
             <input
               className="search-input"
               type="text"
@@ -89,13 +98,36 @@ export default function Home() {
             />
           </div>
           <div className="header-actions">
-            <button className="icon-btn" onClick={() => navigate("/orders")}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+
+            {/* Orders */}
+            <button className="icon-btn" onClick={() => navigate("/orders")} title="Orders">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m7.5 4.27 9 5.15"/>
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                <path d="m3.3 7 8.7 5 8.7-5"/>
+                <path d="M12 22V12"/>
+              </svg>
             </button>
-            <button className="icon-btn" onClick={() => navigate("/cart")}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+
+            {/* Cart */}
+            <button className="icon-btn" onClick={() => navigate("/cart")} title="Cart">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                <path d="M3 6h18"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
               {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
             </button>
+
+            {/* Logout */}
+            <button className="icon-btn" onClick={handleLogout} title="Logout">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </button>
+
           </div>
         </div>
       </header>
@@ -119,7 +151,17 @@ export default function Home() {
               className={`filter-toggle ${showFilters ? "active" : ""}`}
               onClick={() => setShowFilters(!showFilters)}
             >
-              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="21" x2="14" y1="4" y2="4"/>
+                <line x1="10" x2="3" y1="4" y2="4"/>
+                <line x1="21" x2="12" y1="12" y2="12"/>
+                <line x1="8" x2="3" y1="12" y2="12"/>
+                <line x1="21" x2="16" y1="20" y2="20"/>
+                <line x1="12" x2="3" y1="20" y2="20"/>
+                <line x1="14" x2="14" y1="2" y2="6"/>
+                <line x1="8" x2="8" y1="10" y2="14"/>
+                <line x1="16" x2="16" y1="18" y2="22"/>
+              </svg>
               Filters
             </button>
           </div>
@@ -135,9 +177,17 @@ export default function Home() {
                 <div>
                   <span className="filter-label">Price Range</span>
                   <div className="price-inputs">
-                    <input className="price-input" type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+                    <input
+                      className="price-input" type="number"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                    />
                     <span style={{ color: "var(--muted-fg)", fontSize: ".875rem" }}>to</span>
-                    <input className="price-input" type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+                    <input
+                      className="price-input" type="number"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div>
@@ -170,6 +220,7 @@ export default function Home() {
             <div className="loading">Loading...</div>
           ) : products.length === 0 ? (
             <div className="empty-state">
+              <div className="emoji">🛍</div>
               <p>No products found.</p>
               <button onClick={clearFilters}>Clear filters</button>
             </div>
@@ -177,16 +228,27 @@ export default function Home() {
             <div className="products-grid">
               {products.map((p) => (
                 <div className="product-card" key={p.id}>
-                  <div className="img-wrap" onClick={() => navigate(`/product/${p.id}`)} style={{ cursor: "pointer" }}>
+                  <div
+                    className="img-wrap"
+                    onClick={() => navigate(`/product/${p.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <img src={p.image} alt={p.name} loading="lazy" />
                   </div>
                   <div className="card-body">
                     <div className="card-info">
                       <div className="brand">{p.brand}</div>
-                      <div className="name" onClick={() => navigate(`/product/${p.id}`)}>{p.name}</div>
+                      <div
+                        className="name"
+                        onClick={() => navigate(`/product/${p.id}`)}
+                      >
+                        {p.name}
+                      </div>
                       <div className="price-row">
-                        <span className="price">${p.price}</span>
-                        {p.originalPrice && <span className="old-price">${p.originalPrice}</span>}
+                        <span className="price">Rs. {p.price}</span>
+                        {p.originalPrice && (
+                          <span className="old-price">Rs. {p.originalPrice}</span>
+                        )}
                       </div>
                       {!p.inStock && <div className="oos">Out of stock</div>}
                     </div>
@@ -195,13 +257,18 @@ export default function Home() {
                       onClick={() => addToCart(p.id)}
                       disabled={!p.inStock}
                     >
-                      <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                      <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                        <path d="M3 6h18"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                      </svg>
                     </button>
                   </div>
                 </div>
               ))}
             </div>
           )}
+
         </div>
       </div>
     </>

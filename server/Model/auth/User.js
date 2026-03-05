@@ -29,10 +29,6 @@ const User = sequelize.define("User", {
     type: DataTypes.ENUM("user", "admin"),
     defaultValue: "user",
   },
-  adminPin: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
 });
 
 export default User;

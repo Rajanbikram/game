@@ -13,7 +13,8 @@ const Product = sequelize.define("Product", {
   },
   brand: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: "N/A",
   },
   category: {
     type: DataTypes.STRING,
@@ -35,9 +36,10 @@ const Product = sequelize.define("Product", {
     type: DataTypes.JSONB,
     allowNull: true,
   },
-  image: {
-    type: DataTypes.STRING,
-    allowNull: true,
+ image: {
+  type: DataTypes.TEXT,  // ← STRING hoina TEXT
+  allowNull: true,
+
   },
   rating: {
     type: DataTypes.FLOAT,
@@ -50,6 +52,10 @@ const Product = sequelize.define("Product", {
   inStock: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
+  },
+  stock: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   },
 });
 
